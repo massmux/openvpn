@@ -1,0 +1,20 @@
+#!/bin/bash
+
+
+HOSTNAME_FQDN=$(hostname -f);
+
+echo "Server initialization"
+echo "---------------------"
+echo "Your hostname is: $HOSTNAME_FQDN"
+echo -n "Please confirm before proceed: is this correct? (y/n)"
+read yn
+if [ "$yn" == "n" ]; then
+        exit 0;
+else
+	echo "Server initialization"
+	docker-compose run --rm openvpn ovpn_genconfig -u udp://HOSTNAME_FQDN
+	docker-compose run --rm openvpn ovpn_initpki
+	chown -R $(whoami): ./openvpn-data
+	echo "Server starting"
+	docker-compose up -d
+fi

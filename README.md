@@ -2,62 +2,32 @@
 
 this project is simply a setup for dockerized openvpn from  kylemanna. The aim is to best simplify running the vpn
 
+## Server setup
 
-* Initialize the configuration files and certificates
+The setup is very simple:
 
-```bash
-docker-compose run --rm openvpn ovpn_genconfig -u udp://VPN.SERVERNAME.COM
-docker-compose run --rm openvpn ovpn_initpki
+Be very sure that your fully qualified hostname is setup. Something like vpn.yourdomain.com . It is important, otherwise install will fail. The run the following command
+
+```
+./init
 ```
 
-* Fix ownership (depending on how to handle your backups, this may not be needed)
+then follow procedure and answer questions. You will be asked to set a passphrase. This procedure will initialize server and run it. There will be no need of redoing it again if correctly completed
 
-```bash
-sudo chown -R $(whoami): ./openvpn-data
+## Client setup
+
+The script will ask you for the passphrase for server cert, and you will be also required to setup a passphrase for the client. This is mandatory. The script will create a .ovpn file that can be used across your client for connecting to the vpn server.
+
+```
+./client
 ```
 
-* Start OpenVPN server process
+You shall run this script anytime you have a new client to add to this vpn.
 
-```bash
-docker-compose up -d openvpn
+## Running the server
+
+From the folder. If you run the init script, there is no need to manually run the server itself. The init script will do all necessary.
+
 ```
-
-* You can access the container logs with
-
-```bash
-docker-compose logs -f
+docker-compose up -d
 ```
-
-* Generate a client certificate
-
-```bash
-export CLIENTNAME="your_client_name"
-# with a passphrase (recommended)
-docker-compose run --rm openvpn easyrsa build-client-full $CLIENTNAME
-# without a passphrase (not recommended)
-docker-compose run --rm openvpn easyrsa build-client-full $CLIENTNAME nopass
-```
-
-* Retrieve the client configuration with embedded certificates
-
-```bash
-docker-compose run --rm openvpn ovpn_getclient $CLIENTNAME > $CLIENTNAME.ovpn
-```
-
-* Revoke a client certificate
-
-```bash
-# Keep the corresponding crt, key and req files.
-docker-compose run --rm openvpn ovpn_revokeclient $CLIENTNAME
-# Remove the corresponding crt, key and req files.
-docker-compose run --rm openvpn ovpn_revokeclient $CLIENTNAME remove
-```
-
-## Debugging Tips
-
-* Create an environment variable with the name DEBUG and value of 1 to enable debug output (using "docker -e").
-
-```bash
-docker-compose run -e DEBUG=1 -p 1194:1194/udp openvpn
-```
-

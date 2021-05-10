@@ -1,0 +1,23 @@
+#!/bin/bash
+
+
+echo "Client activation"
+echo "-----------------"
+echo -n "Please specify client name: "
+read CLIENTNAME
+
+echo "Setting passphrase is mandatory"
+echo -n "Do you want to proceed? (y/n) "
+read yn
+
+if [ "$yn" == "n" ]; then
+        exit 0;
+else
+	echo "Creating client $CLIENTNAME"
+	docker-compose run --rm openvpn easyrsa build-client-full $CLIENTNAME
+	echo "Exporting $CLIENTNAME.ovpn file"
+	docker-compose run --rm openvpn ovpn_getclient $CLIENTNAME > $CLIENTNAME.ovpn
+fi
+
+
+
