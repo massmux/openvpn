@@ -1,6 +1,6 @@
 # Openvpn
 
-this project is simply a setup for dockerized openvpn from  kylemanna. The aim is to best simplify running the vpn even without any skills.
+this project is simply a setup for dockerized openvpn from  kylemanna. The aim is to best simplify running the vpn even without any skills. This install needs docker to be present on the server. Therefore as prerequisite you need docker already running before starting with details in this page.
 
 ## Server setup
 
